@@ -96,6 +96,10 @@ async def on_message(message: discord.Message):
     if server_name is None:
         return
  
+    # Nur SmallTribes Nachrichten
+    if "smalltribes" not in full_text.lower():
+        return
+ 
     print(f"🚨 Wipe erkannt! Server: {server_name}")
  
     alert_channel = client.get_channel(ALERT_CHANNEL_ID)
