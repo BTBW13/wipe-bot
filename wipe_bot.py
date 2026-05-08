@@ -47,14 +47,20 @@ def parse_wipe_message(content: str):
     if not re.search(r"dev\s*wipe", content, re.IGNORECASE):
         return None
  
-    lines = content.strip().splitlines()
+    # Code-Block Formatierung entfernen (```ansi, ```fix, ``` etc.)
+    clean = re.sub(r"```[a-z]*\n?", "", content)
+    clean = clean.replace("```", "")
+ 
+    lines = clean.strip().splitlines()
     server_name = "Unbekannt"
     for i, line in enumerate(lines):
         if re.search(r"dev\s*wipe", line, re.IGNORECASE):
             for next_line in lines[i + 1:]:
                 stripped = next_line.strip()
-                if stripped and not stripped.lower().startswith("tamed"):
-                    server_name = stripped
+                # Leerzeilen, "Tamed"-Zeilen und ANSI-Escape-Codes überspringen
+                stripped_clean = re.sub(r"\x1b\[[0-9;]*m", "", stripped)
+                if stripped_clean and not stripped_clean.lower().startswith("tamed"):
+                    server_name = stripped_clean
                     break
             break
  
